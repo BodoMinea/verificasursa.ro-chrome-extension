@@ -1,0 +1,26 @@
+{
+  "name": "Verifică sursa!",
+  "version": "1.0",
+  "description": "Verifica daca site-ul de știri pe care ești este cunoscut pentru promovarea unor informații false sau exagerate.",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "page_action" :
+  {
+    "default_icon" : "icon-19.png",
+    "default_title" : "Verifică sursa!",
+    "default_popup" : "popup.html"
+  },
+  "permissions" : [
+    "declarativeContent",
+    "https://verificasursa.ro/*",
+    "contextMenus",
+    "activeTab",
+    "notifications"
+  ],
+  "icons" : {
+    "48" : "icon-48.png",
+    "128" : "icon-128.png"
+  },
+  "manifest_version": 2
+}
