@@ -1,3 +1,31 @@
+var tmpurl;
+
+function extractHostname(url) {
+    var hostname;
+    if (url.indexOf("://") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+    hostname = hostname.split(':')[0];
+    return hostname;
+}
+
+function sitealert(){
+  var opt = {   
+    type: 'basic', 
+    iconUrl: 'icon-128.png', 
+    title: "Atenție!", 
+    buttons: [{
+            title: "Detalii ->"
+        }],
+    message: "Site-ul pe care vă aflați este cunoscut pentru promovarea unor articole cu informații false, exagerate, neverificate și din surse îndoielnice." 
+    }
+	
+	chrome.notifications.create('sitealert', opt, function(id) { console.log("Last error:", chrome.runtime.lastError); });
+}
+
 var xhr = new XMLHttpRequest();
 xhr.open("GET", "https://verificasursa.ro", false);
 xhr.send();
@@ -10,30 +38,21 @@ for(var i = 0; i < divs.length; i++){
    if (i < divs.length-1) { danger += '|'; }
 }
 danger += ')';
-var danger = danger.split(".").join("[.]");
+var danger = danger.split(".").join("[.]").replace(/\s/g,'');
 console.log(danger);
+var pattern = RegExp(danger);
+
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-    var query = tabs[0].url;
-    search = function(){
-    chrome.tabs.create({url: "https://verificasursa.ro?url=" + query});
-  };
-  chrome.contextMenus.create({
-    title: "Verifică Sursa!",
-    contexts:["all"],
-    onclick: search
-  });
-  });
-    chrome.declarativeContent.onPageChanged.addRules([
-      {
-        conditions: [
-          new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { urlMatches: danger },
-          })
-        ],
-        actions: [ new chrome.declarativeContent.ShowPageAction() ]
-      }
-    ]);
-  });
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if(changeInfo.url) {
+        if(pattern.test(extractHostname(tab.url.replace('www.','')))) {
+        	tmpurl = extractHostname(tab.url.replace('www.',''));
+        	sitealert();
+        }
+    }
 });
+  chrome.notifications.onButtonClicked.addListener(function callback(){
+	window.open('https://verificasursa.ro/intrari/'+tmpurl);
+})
+});
+
