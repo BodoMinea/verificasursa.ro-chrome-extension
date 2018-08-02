@@ -42,17 +42,15 @@ var danger = danger.split(".").join("[.]").replace(/\s/g,'');
 console.log(danger);
 var pattern = RegExp(danger);
 
-chrome.runtime.onInstalled.addListener(function() {
-  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if(changeInfo.url) {
-        if(pattern.test(extractHostname(tab.url.replace('www.','')))) {
-        	tmpurl = extractHostname(tab.url.replace('www.',''));
-        	sitealert();
-        }
-    }
-});
-  chrome.notifications.onButtonClicked.addListener(function callback(){
-	window.open('https://verificasursa.ro/intrari/'+tmpurl);
-})
-});
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+	if(changeInfo.url) {
+	    if(pattern.test(extractHostname(tab.url.replace('www.','')))) {
+	    	tmpurl = extractHostname(tab.url.replace('www.',''));
+	    	sitealert();
+	    }
+	}
 
+	chrome.notifications.onButtonClicked.addListener(function callback(){
+		window.open('https://verificasursa.ro/intrari/'+tmpurl);
+	})
+});
